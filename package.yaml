@@ -1,0 +1,48 @@
+name:                log
+version:             0.1.0.0
+github:              "github.com/t94j0/log"
+license:             BSD3
+author:              "Maxwell Harley"
+maintainer:          "maxh@maxh.io"
+copyright:           "2020 Max Harley"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+description: Logbook tool for capturing important thoughts
+
+dependencies:
+- base >= 4.7 && < 5
+- random
+- time
+- directory
+- process
+- filepath
+
+executables:
+  log:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Weverything
+    - -Wno-implicit-prelude
+    - -Wno-missing-import-lists
+    - -Wno-safe
+
+tests:
+  log-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wall
