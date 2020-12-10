@@ -1,14 +1,14 @@
 module Main (main) where
 
-import System.FilePath.Posix
+import Control.Monad
 import Data.List
+import Data.Time.Clock
+import System.FilePath
 import System.Environment
 import System.Process
 import System.Directory
-import Data.Time.Clock
 import System.Random
 import System.Exit
-import Control.Monad
 
 -- utils
 safeHead :: [String] -> String
@@ -26,11 +26,9 @@ getTimeString = show `fmap` getCurrentTime
 checkLogWritable :: IO ()
 checkLogWritable = do
     perms <- getPermissions seclogPath
-    if not $ writable perms
-       then do 
-           putStrLn $ "Error: Unable to write to " ++ seclogPath
-           exitFailure
-       else pure ()
+    unless (writable perms) $ do
+       putStrLn $ "Error: Unable to write to " ++ seclogPath
+       exitFailure
 
 -- Workspace
 seclogPath :: FilePath
@@ -92,7 +90,7 @@ cat = do
 ls :: IO ()
 ls = do
     fs <- listDirectory seclogPath
-    let xs = map (\x -> seclogPath </> x) fs
+    let xs = map (seclogPath </>) fs
     dirs <- filterM doesDirectoryExist xs
     putStrLn $ intercalate "\t" $ map takeBaseName dirs
 
