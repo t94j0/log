@@ -9,6 +9,7 @@ import System.Process
 import System.Directory
 import System.Random
 import System.Exit
+import Text.Printf
 
 -- utils
 safeHead :: [String] -> String
@@ -21,7 +22,7 @@ randFile ext = do
     return $ str++"."++ext
 
 getTimeString :: IO String
-getTimeString = show `fmap` getCurrentTime
+getTimeString = show <$> getCurrentTime
 
 checkLogWritable :: IO ()
 checkLogWritable = do
@@ -57,7 +58,7 @@ logAction :: String -> IO ()
 logAction x = do
     workspacePath <- getWorkspacePath
     time <- getTimeString
-    appendFile (workspacePath </> "record.md") (time++" => "++x++"\n")
+    appendFile (workspacePath </> "record.md") $ printf "%s => %s\n" time x
 
 screenshot :: IO ()
 screenshot = do
@@ -77,21 +78,19 @@ setup :: IO ()
 setup = do
     createDirectoryIfMissing True seclogPath
     fileExists <- doesFileExist $ seclogWorkspace
-    unless fileExists $ do
-        writeFile (seclogWorkspace) ""
+    unless fileExists $ writeFile seclogWorkspace ""
 
 cat :: IO ()
 cat = do
     workspacePath <- getWorkspacePath
-    d <- readFile $ workspacePath </> "record.md"
-    putStrLn d
+    (readFile $ workspacePath </> "record.md") >>= putStrLn
 
 ls :: IO ()
 ls = do
     fs <- listDirectory seclogPath
     let xs = map (seclogPath </>) fs
     dirs <- filterM doesDirectoryExist xs
-    putStrLn $ intercalate "\t" $ map takeBaseName dirs
+    putStrLn $ intercalate "\t" $ map takeFileName dirs
 
 main :: IO ()
 main = do
