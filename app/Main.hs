@@ -27,8 +27,8 @@ checkLogWritable :: IO ()
 checkLogWritable = do
     perms <- getPermissions seclogPath
     unless (writable perms) $ do
-       putStrLn $ "Error: Unable to write to " ++ seclogPath
-       exitFailure
+        putStrLn $ "Error: Unable to write to " ++ seclogPath
+        exitFailure
 
 -- Workspace
 seclogPath :: FilePath
@@ -78,7 +78,7 @@ setup = do
     createDirectoryIfMissing True seclogPath
     fileExists <- doesFileExist $ seclogWorkspace
     unless fileExists $ do
-       writeFile (seclogWorkspace) ""
+        writeFile (seclogWorkspace) ""
 
 cat :: IO ()
 cat = do
@@ -93,20 +93,16 @@ ls = do
     dirs <- filterM doesDirectoryExist xs
     putStrLn $ intercalate "\t" $ map takeBaseName dirs
 
-runModule :: String -> [String] -> IO ()
-runModule cmd args
-  | cmd == "screenshot" = screenshot
-  | cmd == "sc" = screenshot
-  | cmd == "switch" = switchWorkspace $ safeHead args
-  | cmd == "setup" = setup
-  | cmd == "cat" = cat
-  | cmd == "ls" = ls
-  | otherwise = logAction $ intercalate " " $ cmd:args
-
 main :: IO ()
 main = do
     checkLogWritable
     args <- getArgs
     case args of
-      cmd:args_ -> runModule cmd args_
-      _ -> printHelp
+        "screenshot":_ -> screenshot
+        "sc":_ -> screenshot
+        "switch":args_ -> switchWorkspace $ safeHead args_
+        "setup":_ -> setup
+        "cat":_ -> cat
+        "ls":_ -> ls
+        _:_ -> logAction $ intercalate " " args
+        [] -> printHelp
