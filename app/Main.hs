@@ -77,9 +77,8 @@ setup :: IO ()
 setup = do
     createDirectoryIfMissing True seclogPath
     fileExists <- doesFileExist $ seclogWorkspace
-    if not fileExists
-       then writeFile (seclogWorkspace) ""
-       else pure ()
+    unless fileExists $ do
+       writeFile (seclogWorkspace) ""
 
 cat :: IO ()
 cat = do
