@@ -9,6 +9,7 @@ import System.Process
 import System.Directory
 import System.Random
 import System.Exit
+import System.IO
 import Text.Printf
 
 -- utils
@@ -92,6 +93,9 @@ ls = do
     dirs <- filterM doesDirectoryExist xs
     putStrLn $ intercalate "\t" $ map takeFileName dirs
 
+logStdin :: IO ()
+logStdin = getContents >>= logAction
+
 main :: IO ()
 main = do
     checkLogWritable
@@ -104,4 +108,4 @@ main = do
         "cat":_ -> cat
         "ls":_ -> ls
         _:_ -> logAction $ intercalate " " args
-        [] -> printHelp
+        [] -> logStdin
