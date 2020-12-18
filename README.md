@@ -69,7 +69,13 @@ Then, you can switch back into any of these workspaces to keep appending to the 
 
 ## Installation
 
-Honestly, I'm too lazy to package this as a .deb, but I might get around to it later. Right now, install it from source.
+### From Release
+
+Only have the x64 release, so grab from source if you're using x86
+
+https://github.com/t94j0/log/releases/download/1.0.0/log
+
+### From Source
 
 ```bash
 sudo apt install scrot
