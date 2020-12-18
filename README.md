@@ -57,6 +57,15 @@ default    192.168.0.2    192.168.0.3
 
 Then, you can switch back into any of these workspaces to keep appending to the log
 
+### 6. Print current workspace
+
+`log ws` **or** `log workspace`
+
+***Output***
+```
+192.168.0.2
+```
+
 
 ## Installation
 
