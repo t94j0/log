@@ -9,7 +9,6 @@ import System.Process
 import System.Directory
 import System.Random
 import System.Exit
-import System.IO
 import Text.Printf
 
 -- utils
@@ -72,7 +71,7 @@ screenshot = do
 
 printHelp :: IO ()
 printHelp = do
-    putStrLn "usage: log [screenshot|switch|'message']"
+    putStrLn "usage: log [screenshot|switch|ws|cat|'message']"
     exitFailure
 
 setup :: IO ()
@@ -107,5 +106,7 @@ main = do
         "setup":_ -> setup
         "cat":_ -> cat
         "ls":_ -> ls
+        "ws":_ -> getWorkspace >>= putStrLn
+        "workspace":_ -> getWorkspace >>= putStrLn
         _:_ -> logAction $ intercalate " " args
         [] -> logStdin
