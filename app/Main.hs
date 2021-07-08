@@ -1,24 +1,31 @@
+{-# OPTIONS_GHC -Wno-unsafe #-}
 module Main (main) where
 
-import Control.Monad
-import Data.List
-import Data.Time.Clock
-import System.FilePath
-import System.Environment
-import System.Process
+import Control.Monad ( filterM, unless )
+import Data.List ( intercalate )
+import Data.Time.Clock ( getCurrentTime )
+import System.FilePath ( (</>), takeFileName )
+import System.Environment ( getArgs )
+import System.Process ( readProcess )
 import System.Directory
-import System.Random
-import System.Exit
-import Text.Printf
+    ( createDirectoryIfMissing,
+      doesDirectoryExist,
+      doesFileExist,
+      getPermissions,
+      listDirectory,
+      Permissions(writable) )
+import System.Random ( newStdGen, Random(randomRs) )
+import System.Exit ( exitFailure )
+import Text.Printf ( printf )
 
 -- utils
 safeHead :: [String] -> String
-safeHead xs = if length xs == 0 then "" else head xs
+safeHead xs = if null xs then "" else head xs
 
 randFile :: String -> IO String
 randFile ext = do
     gen <- newStdGen
-    let str = take 10 $ randomRs ('a','z') gen 
+    let str = take 10 $ randomRs ('a','z') gen
     return $ str++"."++ext
 
 getTimeString :: IO String
@@ -52,7 +59,7 @@ getWorkspacePath = do
 
 -- Modules
 switchWorkspace :: String -> IO ()
-switchWorkspace = writeFile $ seclogWorkspace
+switchWorkspace = writeFile seclogWorkspace
 
 logAction :: String -> IO ()
 logAction x = do
@@ -69,21 +76,16 @@ screenshot = do
     logAction $ "Screenshot: " ++ fileName
     putStrLn filePath
 
-printHelp :: IO ()
-printHelp = do
-    putStrLn "usage: log [screenshot|switch|ws|cat|'message']"
-    exitFailure
-
 setup :: IO ()
 setup = do
     createDirectoryIfMissing True seclogPath
-    fileExists <- doesFileExist $ seclogWorkspace
+    fileExists <- doesFileExist seclogWorkspace
     unless fileExists $ writeFile seclogWorkspace ""
 
 cat :: IO ()
 cat = do
     workspacePath <- getWorkspacePath
-    (readFile $ workspacePath </> "record.md") >>= putStrLn
+    readFile (workspacePath </> "record.md") >>= putStrLn
 
 ls :: IO ()
 ls = do
@@ -108,5 +110,5 @@ main = do
         "ls":_ -> ls
         "ws":_ -> getWorkspace >>= putStrLn
         "workspace":_ -> getWorkspace >>= putStrLn
-        _:_ -> logAction $ intercalate " " args
+        _:_ -> logAction $ unwords args
         [] -> logStdin
